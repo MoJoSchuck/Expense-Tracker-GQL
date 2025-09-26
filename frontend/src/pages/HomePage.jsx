@@ -5,6 +5,9 @@ import Cards from "../components/Cards";
 import TransactionForm from "../components/TransactionForm";
 
 import { MdLogout } from "react-icons/md";
+import toast from "react-hot-toast";
+import { useMutation } from "@apollo/client/react";
+import { LOGOUT } from "../graphql/mutations/user.mutation";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -15,16 +18,8 @@ const HomePage = () => {
       {
         label: "%",
         data: [13, 8, 3],
-        backgroundColor: [
-          "rgba(75, 192, 192)",
-          "rgba(255, 99, 132)",
-          "rgba(54, 162, 235)",
-        ],
-        borderColor: [
-          "rgba(75, 192, 192)",
-          "rgba(255, 99, 132)",
-          "rgba(54, 162, 235, 1)",
-        ],
+        backgroundColor: ["rgba(75, 192, 192)", "rgba(255, 99, 132)", "rgba(54, 162, 235)"],
+        borderColor: ["rgba(75, 192, 192)", "rgba(255, 99, 132)", "rgba(54, 162, 235, 1)"],
         borderWidth: 1,
         borderRadius: 30,
         spacing: 10,
@@ -33,11 +28,20 @@ const HomePage = () => {
     ],
   };
 
-  const handleLogout = () => {
-    console.log("Logging out...");
-  };
+  const [logout, { loading }] = useMutation(LOGOUT, {
+    refetchQueries: ["GetAuthenticatedUser"],
+  });
 
-  const loading = false;
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // Clear the Apollo Client cache FROM THE DOCS
+      // https://www.apollographql.com/docs/react/caching/advanced-topics/#:~:text=Resetting%20the%20cache,any%20of%20your%20active%20queries
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error(error.message);
+    }
+  };
 
   return (
     <>
@@ -51,16 +55,9 @@ const HomePage = () => {
             className="w-11 h-11 rounded-full border cursor-pointer"
             alt="Avatar"
           />
-          {!loading && (
-            <MdLogout
-              className="mx-2 w-5 h-5 cursor-pointer"
-              onClick={handleLogout}
-            />
-          )}
+          {!loading && <MdLogout className="mx-2 w-5 h-5 cursor-pointer" onClick={handleLogout} />}
           {/* loading spinner */}
-          {loading && (
-            <div className="w-6 h-6 border-t-2 border-b-2 mx-2 rounded-full animate-spin"></div>
-          )}
+          {loading && <div className="w-6 h-6 border-t-2 border-b-2 mx-2 rounded-full animate-spin"></div>}
         </div>
         <div className="flex flex-wrap w-full justify-center items-center gap-6">
           <div className="h-[330px] w-[330px] md:h-[360px] md:w-[360px]  ">
