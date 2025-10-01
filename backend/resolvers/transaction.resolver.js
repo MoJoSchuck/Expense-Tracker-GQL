@@ -23,7 +23,26 @@ const transactionResolver = {
         throw new Error("Failed to fetch transaction");
       }
     },
-    // TODO => ADD categoryStatistics query
+
+    categoryStatistics: async (_, __, context) => {
+      if (!context.getUser()) throw new Error("Unauthenticated");
+
+      const userId = await context.getUser()._id;
+      const transactions = await Transaction.find({ userId });
+      const categoryMap = {};
+
+      transactions.forEach((transaction) => {
+        if (!categoryMap[transaction.category]) {
+          categoryMap[transaction.category] = 0;
+        }
+        categoryMap[transaction.category] += transaction.amount;
+      });
+
+      return Object.entries(categoryMap).map(([category, totalAmount]) => ({
+        category,
+        totalAmount,
+      }));
+    },
   },
   Mutation: {
     createTransaction: async (_, { input }, context) => {
@@ -41,11 +60,7 @@ const transactionResolver = {
     },
     updateTransaction: async (_, { input }) => {
       try {
-        const updatedTransaction = await Transaction.findByIdAndUpdate(
-          input.transactionId,
-          input,
-          { new: true }
-        );
+        const updatedTransaction = await Transaction.findByIdAndUpdate(input.transactionId, input, { new: true });
         return updatedTransaction;
       } catch (error) {
         console.error("Error updating transaction:", error);
@@ -54,9 +69,7 @@ const transactionResolver = {
     },
     deleteTransaction: async (_, { transactionId }) => {
       try {
-        const deletedTransaction = await Transaction.findByIdAndDelete(
-          transactionId
-        );
+        const deletedTransaction = await Transaction.findByIdAndDelete(transactionId);
         return deletedTransaction;
       } catch (error) {
         console.error("Error deleting transaction:", error);
