@@ -21,6 +21,7 @@ const Card = ({ transaction }) => {
   let { category, amount, location, date, paymentType, description } = transaction;
   const cardClass = categoryColorMap[category];
   description = description[0]?.toUpperCase() + description.slice(1);
+  paymentType = paymentType[0]?.toUpperCase() + paymentType.slice(1);
   category = category[0]?.toUpperCase() + category.slice(1);
   const formattedDate = formatDate(date);
 
@@ -46,7 +47,7 @@ const Card = ({ transaction }) => {
           <div className="flex items-center gap-2">
             {!loading && <FaTrash className={"cursor-pointer"} onClick={handleDelete} />}
             {loading && <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-5 w-5"></div>}
-            <Link to={`/transaction/123`}>
+            <Link to={`/transaction/${transaction._id}`}>
               <HiPencilAlt className="cursor-pointer" size={20} />
             </Link>
           </div>
