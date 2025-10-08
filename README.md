@@ -85,7 +85,7 @@ Client notes:
 
 ## Project URL
 
-[Live Demo](expense-tracker-gql-1.onrender.com)
+[Live Demo](https://expense-tracker-gql-1.onrender.com)
 
 ## License
 
