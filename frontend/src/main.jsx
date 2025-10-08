@@ -8,7 +8,7 @@ import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 
 const link = new HttpLink({
-  uri: "http://localhost:4000/graphql", // the URL of our GraphQL server
+  uri: import.meta.env.VITE_NODE_ENV === "development" ? "http://localhost:4000/graphql" : "/graphql",
   credentials: "include", // This tells Apollo Client to send cookies along with every request to the server
 });
 
